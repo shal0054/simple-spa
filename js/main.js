@@ -3,6 +3,7 @@
 const APP = {
    init: () => {
       //this function runs when the page loads
+      console.log('IT RUNS');
    },
 };
 
@@ -26,5 +27,4 @@ const NAV = {
 };
 
 //Start everything running
-
-APP.init();
+document.addEventListener('DOMContentLoaded', APP.init);
