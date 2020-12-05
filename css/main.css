@@ -83,15 +83,16 @@ header form {
 /*******************
    content area
 *******************/
-
 #instructions {
-   display: none;
+   display: visible;
+   display: block;
+   text-align: center;
 }
+
 #actors {
    display: none;
 }
-#media {
-#instructions.active,
+#media
 #actors.active,
 #media.active {
    display: block;
@@ -106,6 +107,7 @@ header form {
 }
 
 .content p {
+   /* display: none;  */
    padding: 0 1rem;
    margin: 1rem 0;
    color: hsl(20, 10%, 50%);
@@ -148,7 +150,7 @@ header form {
       align-items: flex-start;
    }
 
-   #instructions h2,
+   /* #instructions h2, */
    #actors h2,
    #media h2 {
     /* for the wider screens */
