@@ -68,8 +68,8 @@ const SEARCH = {
 //actors is for changes connected to content in the actors section
 const ACTORS = {
    showActors(results) {
-      document.getElementById('actors').style.display = 'visible';
-      document.querySelector('#actors h2').style.display = 'visible';
+      document.getElementById('actors').style.display = 'flex';
+      document.querySelector('#actors h2').style.display = 'block';
       console.log(results[0].popularity);
       SEARCH.getFace(results[0].id);
       let content = document.querySelector('section#actors div.content');
@@ -82,12 +82,12 @@ const ACTORS = {
          imageDiv.className = "image";
 
          let img = document.createElement('img');
-         img.src = 'https://image.tmdb.org/t/p/w185/eze9FO9VuryXLP0aF2cRqPCcibN.jpg';
+         img.src = 'https://image.tmdb.org/t/p/w154/eze9FO9VuryXLP0aF2cRqPCcibN.jpg';
          img.alt = `${result.name}'s image`;
          imageDiv.append(img);
 
          let h3 = document.createElement('h3');
-         h3.className = "ActorName";
+         h3.className = "actorName";
          h3.innerHTML = result.name;
 
          let popularity = document.createElement('p');
