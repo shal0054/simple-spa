@@ -33,7 +33,7 @@ header {
    justify-content: space-between;
    align-items: center;
    min-height: 15vh;
-   font-size: 1rem;
+   font-size: 3.6vw;
    border-bottom: 0.5rem solid hsl(20, 10%, 30%);
 }
 header h1,
@@ -111,6 +111,7 @@ header form {
 }
 
 #actors > .content {
+   margin: 1rem auto;
    display: flex;
    flex-wrap: wrap;
    justify-content: center;
@@ -119,25 +120,26 @@ header form {
 }
 
 .card {
-   width: 400px;
+   width: calc(300px + 7vw);
    height: 185px;
    background-color: var(--card-color);
-   border: 2px solid var(--card-color);
+   border: 2.8px solid var(--card-color);
    display: grid;
-   grid-template-areas: "avatar name" "avatar email";
+   grid-template-areas: "image name" "image popularity";
    grid-template-columns: 30% 70%;
    transition: transform 1s ease-in-out;
 }
 .card:hover {
    transform: scale(1.1);
+   box-shadow: 10px 10px 8px gray;
 }
 
 .card .image {
-   grid-area: avatar;
+   grid-area: image;
    display: flex;
    justify-content: center;
    align-items: center;
-   background-color: var(--main-color);
+   /* background-color: var(--main-color); */
 }
 
 .image img {
@@ -146,13 +148,13 @@ header form {
 }
 .card .actorName {
    grid-area: name;
-   font-size: 1.5rem;
+   font-size: calc(1rem + 0.5vw);
    font-weight: 500;
    padding: 0.5rem 1rem;
 }
 
 .card .popularity {
-   grid-area: email;
+   grid-area: popularity;
    font-weight: 400;
    padding: 0.4rem 1.2rem;
 }
@@ -162,6 +164,16 @@ header form {
    padding: 0 1rem;
    margin: 1rem 0;
    color: hsl(20, 10%, 50%);
+}
+
+#actors h2,
+#media h2 {
+ /* for the wider screens */
+   font-size: calc(4rem + 9vw);
+   color: hsla(20, 10%, 30%, 0.32);
+   line-height: 100%;
+   position: relative;
+   writing-mode: vertical-lr;
 }
 
 /***********************
@@ -187,7 +199,7 @@ header form {
 ************************/
 @media all and (min-width: 800px) {
    header {
-      font-size: 1.2rem;
+      /* font-size: 1.2rem; */
       flex-direction: row;
    }
    #search {
@@ -201,18 +213,19 @@ header form {
       align-items: flex-start;
    } */
 
-   #actors h2,
+   /* #actors h2,
    #media h2 {
-    /* for the wider screens */
-      font-size: 12rem;
+    /* for the wider screens 
+      font-size: calc(4rem + 9vw);
       color: hsla(20, 10%, 30%, 0.32);
+      line-height: 100%;
       position: relative;
       writing-mode: vertical-lr;
-   }
+   } */
 }
 @media all and (min-width: 1000px) {
    header {
-      font-size: 2rem;
+      /* font-size: 2rem; */
    }
    #search {
       font-size: 1.5rem;
