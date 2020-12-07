@@ -117,6 +117,17 @@ header form {
    justify-content: center;
    align-items: flex-start;
    gap: 2rem;
+   z-index: 1;
+}
+
+#media > .content {
+   margin: 1rem auto;
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: center;
+   align-items: flex-start;
+   gap: 2rem;
+   z-index: 2;
 }
 
 .card {
@@ -127,7 +138,7 @@ header form {
    display: grid;
    grid-template-areas: "image name" "image popularity";
    grid-template-columns: 30% 70%;
-   transition: transform 1s ease-in-out;
+   transition: transform .6s ease-in-out;
 }
 .card:hover {
    transform: scale(1.1);
@@ -139,12 +150,14 @@ header form {
    display: flex;
    justify-content: center;
    align-items: center;
+   border: 2px solid var(--card-color);
    /* background-color: var(--main-color); */
+   overflow: hidden;
 }
 
 .image img {
    width: 100%;
-   height: auto;
+   height: 100%;
 }
 .card .actorName {
    grid-area: name;
