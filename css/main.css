@@ -19,6 +19,7 @@ html {
 body {
    min-height: 100vh;
    background-color: hsl(20, 30%, 90%);
+   position: relative;
 }
 
 /*******************
@@ -33,6 +34,7 @@ header {
    justify-content: space-between;
    align-items: center;
    min-height: 15vh;
+   width: 100%;
    font-size: 3.6vw;
    border-bottom: 0.5rem solid hsl(20, 10%, 30%);
 }
@@ -91,15 +93,34 @@ header form {
 }
 #actors {
    display: none;
+   position: absolute;
+   z-index: 1;
 }
 #media {
-   display: none; 
+   position: absolute;
+   background-color: #EDE4DE;
+   z-index: 20;
+   transition: transform 0.7s ease-out;
 }
 
-/* #actors.active,
-#media.active {
-   display: block;
-} */
+#media.off {
+   display: none; 
+   transform: translateX(200%);
+   
+}
+
+#media.on {
+   display: flex;
+   /* position: absolute; */
+   top: 51vh;
+   left: 15%;
+   right: 0;
+   bottom: 0;
+   transform: translateX(0);
+   box-shadow: 5px 5px 5px gray;
+   height: fit-content;
+}
+
 #instructions h2,
 #actors h2,
 #media h2 {
@@ -132,7 +153,7 @@ header form {
 
 .card {
    width: calc(300px + 7vw);
-   height: 185px;
+   height: 175px;
    background-color: var(--card-color);
    border: 2.8px solid var(--card-color);
    display: grid;
@@ -157,16 +178,17 @@ header form {
 
 .image img {
    width: 100%;
-   height: 100%;
+   height: auto;
 }
-.card .actorName {
+.card .cardName {
    grid-area: name;
    font-size: calc(1rem + 0.5vw);
    font-weight: 500;
    padding: 0.5rem 1rem;
 }
 
-.card .popularity {
+.card .popularity,
+.card .vote {
    grid-area: popularity;
    font-weight: 400;
    padding: 0.4rem 1.2rem;
@@ -181,14 +203,31 @@ header form {
 
 #actors h2,
 #media h2 {
- /* for the wider screens */
-   font-size: calc(4rem + 9vw);
+ /* for all screens */
+   font-size: calc(3.8rem + 9vw);
    color: hsla(20, 10%, 30%, 0.32);
    line-height: 100%;
-   position: relative;
+   /* position: relative; */
    writing-mode: vertical-lr;
 }
 
+.image .resize {
+   height: 100%;
+   width: auto;
+}
+
+.clicked {
+   width: 100%;
+   pointer-events: none;
+} 
+
+footer img{
+   position: absolute;
+   bottom: 0;
+   left: 0;
+   right: 0;
+   margin-top: 15rem;
+}
 /***********************
    Effects
 ***********************/

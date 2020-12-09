@@ -5,21 +5,31 @@ const log = console.log;
 const APP = {
    KEY: "67a8835b5b606f17a40522e9ff643ea8",
    baseURL: 'https://api.themoviedb.org/3/',
-   get urlConfig() {
-      return `${this.baseURL}configuration?api_key=${this.KEY}`
-   },
+   // get urlConfig() {
+   //    return `${this.baseURL}configuration?api_key=${this.KEY}`
+   // },
    IMG_BASE_URL: 'https://image.tmdb.org/t/p/',
 
    init: () => {
       //this function runs when the page loads
-      // input.addEventListener('input', SEARCH);
       let searchBtn = document.querySelector('#btnSearch');
       searchBtn.addEventListener('click', SEARCH.search);
+
+      let input = document.querySelector('input');
+      input.addEventListener('click', () => {
+         searchBtn.style.display = 'none';
+      });
    },
-}; // end this.nameSpace
+
+   buildCard(type) {
+
+   }
+}; // end APP nameSpace
 
 //search is for anything to do with the fetch api
 const SEARCH = {
+   Results: null,
+
    search(ev) {
       ev.preventDefault()
       let input = document.querySelector('input');
@@ -47,8 +57,8 @@ const SEARCH = {
             });
       } else {
          alert(`Please enter an actor's name.`);
-      }
-   }
+      } // end if input.value
+   } // end func
 }; // end SEARCH nameSpace
 
 //actors is for changes connected to content in the actors section
@@ -56,25 +66,26 @@ const ACTORS = {
    showActors(results) {
       let content = document.querySelector('section#actors div.content');
       let df = document.createDocumentFragment();
+      SEARCH.Results = results;
 
-      results.forEach(async (result) => {
-
+      results.forEach(result => {
+         // log(result.known_for);
          if (result.profile_path) {
-            log('creating cardDiv');
+            // log('creating cardDiv');
             let cardDiv = document.createElement('div');
             cardDiv.className = "card";
-            cardDiv.setAttribute('data-actorID', result.id);
+            cardDiv.setAttribute('data-actorid', result.id);
             let imageDiv = document.createElement('div');
             imageDiv.className = "image";
 
             let img = document.createElement('img');
             img.className = "actorImage"
-            img.src = APP.IMG_BASE_URL + 'w154' + result.profile_path;
+            img.src = APP.IMG_BASE_URL + 'w92' + result.profile_path;
             img.alt = `${result.name}'s image`;
             imageDiv.append(img);
 
             let h3 = document.createElement('h3');
-            h3.className = "actorName";
+            h3.className = "cardName";
             h3.innerHTML = result.name;
 
             let popularity = document.createElement('p');
@@ -83,48 +94,121 @@ const ACTORS = {
 
             cardDiv.append(imageDiv, h3, popularity);
             df.append(cardDiv);
-            // content.append(cardDiv);
-         }
-      });
+
+         } // end if
+      }); // end forEach
       content.innerHTML = '';
       content.append(df);
       document.getElementById('actors').style.display = 'flex';
       document.querySelector('#actors h2').style.display = 'block';
       content.addEventListener('click', MEDIA.showMedia)
 
-   }
+   } // end func
 }; // end this.nameSpace
 
 //media is for changes connected to content in the media section
 const MEDIA = {
    showMedia(ev) {
-      if (ev.target.className === 'card' ||
-         ev.target.parentElement.className === 'card' ||
-         ev.target.className === 'actorImage') {
-         document.getElementById('actors').style.display = 'none';
-         document.getElementById('media').style.display = 'flex';
-         let mediaTitle = document.querySelector('#media h2')
-         mediaTitle.style.display = 'block';
+      let myClass = ev.target.className;
+      let target = ev.target;
+      let card;
+      //ev.target.closest('[data-actorid])
+      if (myClass === 'card' ||
+         target.parentElement.className === 'card' ||
+         myClass === 'actorImage') {
+         // document.getElementById('actors').style.display = 'none';
+         let mediaSection = document.getElementById('media');
+         let actorsTitle = document.querySelector('#actors h2')
+         // mediaTitle.style.display = 'block';
+
+         // always select cardDiv
+         if (myClass === 'card') {
+            card = target;
+         } else if (myClass === 'actorImage') {
+            card = target.parentElement.parentElement;
+         } else {
+            card = target.parentElement;
+         }
+         log(SEARCH.Results);
+         card.classList.add('clicked');
+         let img = document.querySelector('.clicked .actorImage');
+         img.classList.add('resize');
+         // push clicked card to the top
+         let main = document.querySelector('main');
+         main.insertBefore(card, main.firstChild);
+
+         let actorsContent = document.querySelector('#actors .content')
+         actorsContent.style.display = 'none';
+         document.querySelector('.clicked .popularity').innerHTML = `is known for...`;
+
+         mediaSection.classList.remove('off');
+         mediaSection.classList.add('on');
+
 
          // goes back to Actors page
-         mediaTitle.addEventListener('click', () => {
-            document.getElementById('media').style.display = 'none';
-            document.getElementById('actors').style.display = 'flex';
-            document.querySelector('#actors h2').style.display = 'block';
+         actorsTitle.addEventListener('click', () => {
+            mediaSection.classList.remove('on');
+            mediaSection.classList.add('off');
+            document.querySelector('#actors .content').style.display = 'flex';
+            actorsContent.append(card);
+            card.classList.remove('clicked');
+            img.classList.remove('resize');
+            // document.querySelector('#actors h2').style.display = 'block';
+         }); // end listener
+
+         let id = card.dataset.actorid;
+         let content = document.querySelector('section#media div.content');
+         let df = document.createDocumentFragment();
+         // log(SEARCH.Results);
+         SEARCH.Results.forEach(person => {
+            // use .find instead
+            if (person.id == id) {
+               person.known_for.forEach(movie => {
+
+                  let cardDiv = document.createElement('div');
+                  cardDiv.className = "card";
+                  let imageDiv = document.createElement('div');
+                  imageDiv.className = "image";
+
+                  let img = document.createElement('img');
+                  img.src = APP.IMG_BASE_URL + 'w92' + movie.poster_path;
+                  img.alt = `poster for ${movie.title}`;
+                  imageDiv.append(img);
+
+                  let h3 = document.createElement('h3');
+                  h3.className = "cardName";
+
+                  let vote = document.createElement('p');
+                  vote.className = "vote";
+                  vote.innerHTML = `Rating: ${movie.vote_average}`;
+
+                  if (movie.media_type === 'movie') {
+                     h3.innerHTML = movie.title;
+
+                  } else {
+                     h3.innerHTML = movie.name;
+                  }
+
+                  cardDiv.append(imageDiv, h3, vote);
+                  df.append(cardDiv);
+               });
+            }
          });
+         content.innerHTML = '';
+         content.append(df);
       } // end if
    } // end func
-}; // end this.nameSpace
+}; // end MEDIA nameSpace
 
 //storage is for working with localstorage
 const STORAGE = {
    //this will be used in Assign 4
-}; // end this.nameSpace
+}; // end STORAGE nameSpace
 
 //nav is for anything connected to the history api and location
 const NAV = {
    //this will be used in Assign 4
-};
+}; // end NAV nameSpace
 
 //Start everything running
 document.addEventListener('DOMContentLoaded', APP.init);
