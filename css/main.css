@@ -117,7 +117,7 @@ header form {
    right: 0;
    bottom: 0;
    transform: translateX(0);
-   box-shadow: 5px 5px 5px gray;
+   box-shadow: 0 8px 8px 8px gray;
    height: fit-content;
 }
 
@@ -221,12 +221,14 @@ header form {
    pointer-events: none;
 } 
 
-footer img{
+footer {
    position: absolute;
    bottom: 0;
    left: 0;
    right: 0;
-   margin-top: 15rem;
+   width: 70%;
+   text-align: center;
+   margin: 0 auto;
 }
 /***********************
    Effects

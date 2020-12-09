@@ -14,11 +14,6 @@ const APP = {
       //this function runs when the page loads
       let searchBtn = document.querySelector('#btnSearch');
       searchBtn.addEventListener('click', SEARCH.search);
-
-      let input = document.querySelector('input');
-      input.addEventListener('click', () => {
-         searchBtn.style.display = 'none';
-      });
    },
 
    buildCard(type) {
@@ -64,6 +59,8 @@ const SEARCH = {
 //actors is for changes connected to content in the actors section
 const ACTORS = {
    showActors(results) {
+      let searchBtn = document.querySelector('#btnSearch');
+      searchBtn.style.display = 'none';
       let content = document.querySelector('section#actors div.content');
       let df = document.createDocumentFragment();
       SEARCH.Results = results;
