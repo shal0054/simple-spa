@@ -13,92 +13,175 @@ const APP = {
    init: () => {
       //this function runs when the page loads
       let searchBtn = document.querySelector('#btnSearch');
-      searchBtn.addEventListener('click', SEARCH.search);
+      searchBtn.addEventListener('click', SEARCH.checkSearch);
+      STORAGE.loadStorage();
    },
 
-   buildCard(type) {
+   buildCard(result, type) {
+
+      let cardDiv = document.createElement('div');
+      cardDiv.classList.add('card', 'horizontal', 'col', 's12', 'm6', 'l4', 'hoverable');
+      cardDiv.setAttribute('data-actorid', result.id);
+
+      let imageRowDiv = document.createElement('div');
+      imageRowDiv.classList.add('imageRow', 'row');
+
+      let cardGridDiv = document.createElement('div');
+      cardGridDiv.classList.add('cardGrid', 'col', 's12');
+
+      let imgDiv = document.createElement('div');
+      imgDiv.classList.add('card-image', 'col', 's4');
+
+      let img = document.createElement('img');
+      img.classList.add('actorImage');
+      img.src = APP.IMG_BASE_URL + 'w185' + result.profile_path;
+      img.alt = `${result.name}'s image`;
+
+      let cardStackDiv = document.createElement('div');
+      cardStackDiv.classList.add('card-stacked');
+
+      let cardBodyDiv = document.createElement('div');
+      cardBodyDiv.classList.add('card-content', 'col', 's8', 'center-align', 'flow-text');
+
+      let h3 = document.createElement('h3');
+      h3.className = "cardName";
+      h3.innerHTML = result.name;
+
+
+      let popularity = document.createElement('p');
+      popularity.className = "popularity";
+      popularity.innerHTML = `Popularity: ${result.popularity}`;
+
+      imgDiv.append(img);
+      cardGridDiv.append(imgDiv);
+      cardBodyDiv.append(h3, popularity);
+      cardGridDiv.append(cardBodyDiv);
+      imageRowDiv.append(cardGridDiv);
+      cardDiv.append(imageRowDiv, cardGridDiv);
+      return cardDiv;
+   },
+
+   sortBtns(io) {
+      if (io === 'on') {
+         NAV.hideShowContent('.sort-btns', 'inline-flex');
+         document.querySelector('#sNameBtn').addEventListener('click', APP.cardSort);
+         document.querySelector('#sPopBtn').addEventListener('click', APP.cardSort);
+      } else {
+         NAV.hideShowContent('.sort-btns', 'none');
+      }
+   },
+
+   cardSort(ev) {
+      let clicked = ev.target.closest('.btn-flat').firstElementChild;
+      let sortedArr = null;
+      // flip arrows
+      if (clicked.innerHTML === 'keyboard_arrow_up') {
+         clicked.innerHTML = 'keyboard_arrow_down';
+
+         if (clicked.id === 'nameArrow') {
+            sortedArr = STORAGE.sorting('name');
+            ACTORS.showActors(sortedArr);
+         } else {
+            sortedArr = STORAGE.sorting('popularity');
+            ACTORS.showActors(sortedArr);
+         }
+
+      } else {
+         clicked.innerHTML = 'keyboard_arrow_up';
+
+         if (clicked.id === 'nameArrow') {
+            sortedArr = STORAGE.sorting('name');
+            ACTORS.showActors(sortedArr.reverse());
+         } else {
+            sortedArr = STORAGE.sorting('popularity');
+            ACTORS.showActors(sortedArr.reverse());
+         }
+
+      } // end outer if
 
    }
 }; // end APP nameSpace
 
 //search is for anything to do with the fetch api
 const SEARCH = {
-   Results: null,
+   results: [],
 
-   search(ev) {
-      ev.preventDefault()
-      let input = document.querySelector('input');
-      let url = `${APP.baseURL}search/person?api_key=${APP.KEY}&query=${input.value}&language=en-US`;
-      //log(url);
-      if (input.value) {
-         document.getElementById('instructions').style.display = 'none';
+   checkSearch(ev) {
+      ev.preventDefault();
+      let input = document.querySelector('#search').value.toLowerCase();
 
-         fetch(url)
-            .then(resp => {
-               if (resp.ok) {
-                  return resp.json();
-               } else {
-                  //did not get a HTTP 200 Status
-                  throw new Error(`ERROR: ${resp.status_code} ${resp.status_message}`);
-               }
-            })
-            .then(data => {
-               ACTORS.showActors(data.results);
-               // log(data.results[0]);
-            })
-            .catch(err => {
-               //handle the error
-               alert(err);
-            });
+      if (input) {
+
+         NAV.hideShowContent('#instructions', 'none');
+         NAV.hideShowContent('footer', 'none');
+
+         let key = STORAGE.BASE_KEY + input;
+
+         if (STORAGE.keys.includes(key)) { // existing query
+            SEARCH.results = STORAGE.getStorage(key);
+            ACTORS.showActors(SEARCH.results);
+         } else { // a brand new search query
+            SEARCH.doFetch(input);
+         }
+
       } else {
          alert(`Please enter an actor's name.`);
-      } // end if input.value
-   } // end func
+      }// end outer if
+   },
+
+   doFetch(input) {
+      let url = `${APP.baseURL}search/person?api_key=${APP.KEY}&query=${input}&language=en-US`;
+      // let mediaSection = document.getElementById('media');
+      // mediaSection.classList.remove('on');
+      // mediaSection.classList.add('off');
+      log('Doing a Fetch');
+      fetch(url)
+         .then(resp => {
+            if (resp.ok) {
+               return resp.json();
+            } else {
+               //did not get a HTTP 200 Status
+               throw new Error(`ERROR: ${resp.status_code} ${resp.status_message}`);
+            }
+         })
+         .then(data => {
+            STORAGE.setStorage(input, data.results);
+            SEARCH.results = data.results;
+            ACTORS.showActors(data.results);
+         })
+         .catch(err => {
+            //handle the error
+            alert(err);
+         });
+
+   } // end search func
 }; // end SEARCH nameSpace
 
 //actors is for changes connected to content in the actors section
 const ACTORS = {
    showActors(results) {
-      let searchBtn = document.querySelector('#btnSearch');
-      searchBtn.style.display = 'none';
-      let content = document.querySelector('section#actors div.content');
+
+      let contentArea = document.querySelector('#actors .row');
       let df = document.createDocumentFragment();
-      SEARCH.Results = results;
+
+      APP.sortBtns('on');
 
       results.forEach(result => {
-         // log(result.known_for);
+
          if (result.profile_path) {
-            // log('creating cardDiv');
-            let cardDiv = document.createElement('div');
-            cardDiv.className = "card";
-            cardDiv.setAttribute('data-actorid', result.id);
-            let imageDiv = document.createElement('div');
-            imageDiv.className = "image";
 
-            let img = document.createElement('img');
-            img.className = "actorImage"
-            img.src = APP.IMG_BASE_URL + 'w92' + result.profile_path;
-            img.alt = `${result.name}'s image`;
-            imageDiv.append(img);
+            let cardDiv = APP.buildCard(result, 'actor');
 
-            let h3 = document.createElement('h3');
-            h3.className = "cardName";
-            h3.innerHTML = result.name;
-
-            let popularity = document.createElement('p');
-            popularity.className = "popularity";
-            popularity.innerHTML = `Popularity: ${result.popularity}`;
-
-            cardDiv.append(imageDiv, h3, popularity);
             df.append(cardDiv);
 
          } // end if
       }); // end forEach
-      content.innerHTML = '';
-      content.append(df);
-      document.getElementById('actors').style.display = 'flex';
-      document.querySelector('#actors h2').style.display = 'block';
-      content.addEventListener('click', MEDIA.showMedia)
+
+      contentArea.innerHTML = '';
+      contentArea.append(df);
+      NAV.hideShowContent('#actors', 'flex');
+      NAV.hideShowContent('#actors h2', 'block');
+      contentArea.addEventListener('click', MEDIA.showMedia)
 
    } // end func
 }; // end this.nameSpace
@@ -113,10 +196,9 @@ const MEDIA = {
       if (myClass === 'card' ||
          target.parentElement.className === 'card' ||
          myClass === 'actorImage') {
-         // document.getElementById('actors').style.display = 'none';
+
          let mediaSection = document.getElementById('media');
-         let actorsTitle = document.querySelector('#actors h2')
-         // mediaTitle.style.display = 'block';
+         let actorsTitle = document.querySelector('#actors h2');
 
          // always select cardDiv
          if (myClass === 'card') {
@@ -135,7 +217,7 @@ const MEDIA = {
          main.insertBefore(card, main.firstChild);
 
          let actorsContent = document.querySelector('#actors .content')
-         actorsContent.style.display = 'none';
+         NAV.hideShowContent('#actors .content', 'none');
          document.querySelector('.clicked .popularity').innerHTML = `is known for...`;
 
          mediaSection.classList.remove('off');
@@ -146,11 +228,10 @@ const MEDIA = {
          actorsTitle.addEventListener('click', () => {
             mediaSection.classList.remove('on');
             mediaSection.classList.add('off');
-            document.querySelector('#actors .content').style.display = 'flex';
+            NAV.hideShowContent('#actors .content', 'flex');
             actorsContent.append(card);
             card.classList.remove('clicked');
             img.classList.remove('resize');
-            // document.querySelector('#actors h2').style.display = 'block';
          }); // end listener
 
          let id = card.dataset.actorid;
@@ -168,7 +249,7 @@ const MEDIA = {
                   imageDiv.className = "image";
 
                   let img = document.createElement('img');
-                  img.src = APP.IMG_BASE_URL + 'w92' + movie.poster_path;
+                  img.src = APP.IMG_BASE_URL + 'w185' + movie.poster_path;
                   img.alt = `poster for ${movie.title}`;
                   imageDiv.append(img);
 
@@ -188,9 +269,9 @@ const MEDIA = {
 
                   cardDiv.append(imageDiv, h3, vote);
                   df.append(cardDiv);
-               });
+               }); // end inner forEach
             }
-         });
+         }); // end outer forEach
          content.innerHTML = '';
          content.append(df);
       } // end if
@@ -199,12 +280,56 @@ const MEDIA = {
 
 //storage is for working with localstorage
 const STORAGE = {
-   //this will be used in Assign 4
+   keys: [],
+
+   BASE_KEY: 'Karim-Actors-Search-',
+
+   sorting(prop) {
+      let newArr = Array.from(SEARCH.results);
+      newArr.sort(function (a, b) {
+         if (a[prop] > b[prop]) {
+            return 1
+         } else if (b[prop] > a[prop]) {
+            return -1
+         } else {
+            return 0
+         }
+      });
+      return newArr;
+   },
+
+   loadStorage() {
+      //go to localstorage and retrieve all the keys that start with APP.keybase
+      let num = localStorage.length;
+      if (num) {
+         STORAGE.keys = []; //reset the keys array
+         for (let i = 0; i < num; i++) {
+            let key = localStorage.key(i);
+            if (key.startsWith(STORAGE.BASE_KEY)) {
+               STORAGE.keys.push(key);
+            }
+         }
+      }
+   },
+
+   getStorage(key) {
+      let storage = localStorage.getItem(key);
+      storage = JSON.parse(storage)
+      return storage;
+   },
+
+   setStorage(input, results) {
+      let key = STORAGE.BASE_KEY + input;
+      localStorage.setItem(key, JSON.stringify(results));
+      STORAGE.keys.push(key);
+   }
 }; // end STORAGE nameSpace
 
 //nav is for anything connected to the history api and location
 const NAV = {
-   //this will be used in Assign 4
+   hideShowContent(item, vis) {
+      document.querySelector(item).style.display = vis;
+   }
 }; // end NAV nameSpace
 
 //Start everything running
