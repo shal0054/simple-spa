@@ -1,292 +1,63 @@
-@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;500&display=swap");
-
-*,
-*::before,
-*::after {
-   padding: 0;
-   margin: 0;
-   box-sizing: border-box;
-   --main-color: rgba(31, 30, 30, 0.8);
-   --card-color: #BBB2AC;
-}
-html {
-   font-family: Raleway, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-   font-weight: 300;
-   font-size: 20px;
-   line-height: 1.5;
-}
 body {
-   min-height: 100vh;
-   background-color: hsl(20, 30%, 90%);
    position: relative;
+   height: 100vh;
 }
-
-/*******************
-   header and search
-*******************/
 
 header {
-   background-color: hsl(20, 40%, 40%);
-   color: hsl(20, 40%, 100%);
-   display: flex;
-   flex-direction: column;
-   justify-content: space-between;
-   align-items: center;
-   min-height: 15vh;
-   width: 100%;
-   font-size: 3.6vw;
-   border-bottom: 0.5rem solid hsl(20, 10%, 30%);
-}
-header h1,
-header form {
-   padding: 1rem;
-}
-header h1 {
-   text-shadow: 2px 2px 2px hsl(20, 10%, 30%);
-}
-header form {
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   margin-right: 1rem;
-}
-#search {
-   font-size: 1rem;
-   line-height: 1;
-   padding: 0.25rem 1rem;
-   font-family: Raleway, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-   font-weight: 300;
-   min-width: 30ch;
-}
-#btnSearch .iconic {
-   height: 22px;
-   width: 22px;
-}
-#btnSearch .iconic * {
-   stroke: hsl(20, 10%, 60%);
-   fill: hsl(20, 10%, 30%);
-}
-#btnSearch.pulse {
-   animation-name: pulse;
-   animation-duration: 2s;
-   animation-timing-function: linear;
-   animation-delay: 0;
-   animation-iteration-count: infinite;
-   animation-direction: alternate;
-   animation-fill-mode: backwards;
-}
-#btnSearch {
-   border-radius: 0.5rem;
-   margin-left: -2.2rem;
-   border: none;
-   background-color: white;
+   min-height: 30vh;
 }
 
-/*******************
-   content area
-*******************/
+#pageTitle:hover {
+   cursor: pointer;
+}
+
+#sort-span {
+   line-height: 2.4rem;
+}
+
+.sort-btns {
+   display: none;
+}
+
 #instructions {
    display: block;
-   text-align: center;
 }
+
 #actors {
    display: none;
-   position: absolute;
-   z-index: 1;
-}
-#media {
-   position: absolute;
-   background-color: #EDE4DE;
-   z-index: 20;
-   transition: transform 0.7s ease-out;
+   margin: 1rem;
 }
 
-#media.off {
-   display: none; 
-   transform: translateX(200%);
-   
-}
-
-#media.on {
-   display: flex;
-   /* position: absolute; */
-   top: 51vh;
-   left: 15%;
-   right: 0;
-   bottom: 0;
-   transform: translateX(0);
-   transform: translateY(-10%);
-   box-shadow: 0 8px 8px 8px gray;
-   height: fit-content;
-}
-
-#instructions h2,
-#actors h2,
-#media h2 {
-  /* display: none; */
-   font-weight: 500;
-   font-size: 3rem;
-   color: hsl(20, 10%, 30%);
-   padding: 1rem;
-}
-
-#actors > .content {
-   margin: 1rem auto;
-   display: flex;
-   flex-wrap: wrap;
-   justify-content: center;
-   align-items: flex-start;
-   gap: 2rem;
-   z-index: 1;
-}
-
-#media > .content {
-   margin: 1rem auto;
-   display: flex;
-   flex-wrap: wrap;
-   justify-content: center;
-   align-items: flex-start;
-   gap: 2rem;
-   z-index: 2;
-}
-
-.card {
-   width: calc(300px + 7vw);
-   height: 175px;
-   background-color: var(--card-color);
-   border: 2.8px solid var(--card-color);
-   display: grid;
-   grid-template-areas: "image name" "image popularity";
-   grid-template-columns: 30% 70%;
-   transition: transform .6s ease-in-out;
-}
-.card:hover {
-   transform: scale(1.1);
-   box-shadow: 10px 10px 8px gray;
-}
-
-.card .image {
-   grid-area: image;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   border: 2px solid var(--card-color);
-   /* background-color: var(--main-color); */
-   overflow: hidden;
-}
-
-.image img {
-   width: 100%;
-   height: auto;
-}
-.card .cardName {
-   grid-area: name;
-   font-size: calc(1rem + 0.5vw);
-   font-weight: 500;
-   padding: 0.5rem 1rem;
-}
-
-.card .popularity,
-.card .vote {
-   grid-area: popularity;
-   font-weight: 400;
-   padding: 0.4rem 1.2rem;
-}
-
-.content p {
-  /* display: none;  */
-   padding: 0 1rem;
+.oneCard {
    margin: 1rem 0;
-   color: hsl(20, 10%, 50%);
+   height: 18rem;
 }
 
-#actors h2,
-#media h2 {
- /* for all screens */
-   font-size: calc(3.8rem + 9vw);
-   color: hsla(20, 10%, 30%, 0.32);
-   line-height: 100%;
-   /* position: relative; */
-   writing-mode: vertical-lr;
+.cardName {
+   font-size: calc(2vw + 1.5rem);
 }
 
-.image .resize {
-   height: 100%;
-   width: auto;
+#media {
+   display: none;
 }
-
-.clicked {
-   width: 100%;
-   pointer-events: none;
-} 
 
 footer {
+   background-color: black;
+   padding: 1rem 8rem;
    position: absolute;
    bottom: 0;
-   left: 0;
-   right: 0;
-   width: 70%;
-   text-align: center;
-   margin: 0 auto;
-}
-/***********************
-   Effects
-***********************/
-@keyframes pulse {
-   0% {
-      transform: scale(1);
-      opacity: 1;
-   }
-   50% {
-      transform: scale(1.2);
-      opacity: 0.64;
-   }
-   100% {
-      transform: scale(1);
-      opacity: 1;
-   }
+   width: 100%;
 }
 
-/************************
-   Media Queries
-************************/
 @media all and (min-width: 800px) {
-   header {
-      /* font-size: 1.2rem; */
-      flex-direction: row;
+   .cardName {
+      font-size: calc(1vw + 1.3rem);
    }
-   #search {
-      max-width: 30vw;
-   }
-   /* #actors.active,
-   #media.active {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: flex-start;
-   } */
-
-   /* #actors h2,
-   #media h2 {
-    /* for the wider screens 
-      font-size: calc(4rem + 9vw);
-      color: hsla(20, 10%, 30%, 0.32);
-      line-height: 100%;
-      position: relative;
-      writing-mode: vertical-lr;
-   } */
+   
 }
-@media all and (min-width: 1000px) {
-   header {
-      /* font-size: 2rem; */
+@media all and (max-width: 400px) {
+   #sNameBtn, #sPopBtn {
+      font-size: 0.8rem;
    }
-   #search {
-      font-size: 1.5rem;
-   }
-   #btnSearch .iconic {
-      height: 42px;
-      width: 42px;
-   }
+   
 }

@@ -12,52 +12,64 @@ const APP = {
 
    init: () => {
       //this function runs when the page loads
-      let searchBtn = document.querySelector('#btnSearch');
-      searchBtn.addEventListener('click', SEARCH.checkSearch);
+      document.querySelector('#btnSearch').addEventListener('click', SEARCH.checkSearch);
+      document.querySelector('#pageTitle').addEventListener('click', () => { location.reload() });
       STORAGE.loadStorage();
    },
 
    buildCard(result, type) {
 
       let cardDiv = document.createElement('div');
-      cardDiv.classList.add('card', 'horizontal', 'col', 's12', 'm6', 'l4', 'hoverable');
-      cardDiv.setAttribute('data-actorid', result.id);
+      cardDiv.classList.add('oneCard', 'col', 's12', 'm6', 'l4');
 
-      let imageRowDiv = document.createElement('div');
-      imageRowDiv.classList.add('imageRow', 'row');
+      let rowDiv = document.createElement('div');
+      rowDiv.classList.add('row');
 
       let cardGridDiv = document.createElement('div');
       cardGridDiv.classList.add('cardGrid', 'col', 's12');
 
+      let card = document.createElement('div');
+      card.classList.add('card', 'horizontal', 'hoverable');
+
       let imgDiv = document.createElement('div');
-      imgDiv.classList.add('card-image', 'col', 's4');
+      imgDiv.classList.add('card-image');
 
       let img = document.createElement('img');
-      img.classList.add('actorImage');
-      img.src = APP.IMG_BASE_URL + 'w185' + result.profile_path;
-      img.alt = `${result.name}'s image`;
 
       let cardStackDiv = document.createElement('div');
       cardStackDiv.classList.add('card-stacked');
 
-      let cardBodyDiv = document.createElement('div');
-      cardBodyDiv.classList.add('card-content', 'col', 's8', 'center-align', 'flow-text');
-
       let h3 = document.createElement('h3');
       h3.className = "cardName";
-      h3.innerHTML = result.name;
 
+      let cardContentDiv = document.createElement('div');
+      cardContentDiv.classList.add('card-content');
 
-      let popularity = document.createElement('p');
-      popularity.className = "popularity";
-      popularity.innerHTML = `Popularity: ${result.popularity}`;
+      let p = document.createElement('p');
+
+      if (type === 'actor') {
+
+         cardDiv.setAttribute('data-actorid', result.id);
+
+         img.classList.add('actorImage');
+         img.src = APP.IMG_BASE_URL + 'w185' + result.profile_path;
+         img.alt = `${result.name}'s image`;
+
+         h3.innerHTML = result.name;
+
+         p.className = "popularity";
+         p.innerHTML = `Popularity: ${result.popularity}`;
+
+      } // end if
+
+      cardContentDiv.append(h3, p);
 
       imgDiv.append(img);
-      cardGridDiv.append(imgDiv);
-      cardBodyDiv.append(h3, popularity);
-      cardGridDiv.append(cardBodyDiv);
-      imageRowDiv.append(cardGridDiv);
-      cardDiv.append(imageRowDiv, cardGridDiv);
+      cardStackDiv.append(cardContentDiv);
+      card.append(imgDiv, cardStackDiv);
+      cardGridDiv.append(card);
+      rowDiv.append(cardGridDiv);
+      cardDiv.append(rowDiv);
       return cardDiv;
    },
 
@@ -145,8 +157,8 @@ const SEARCH = {
             }
          })
          .then(data => {
-            STORAGE.setStorage(input, data.results);
             SEARCH.results = data.results;
+            STORAGE.setStorage(input, data.results);
             ACTORS.showActors(data.results);
          })
          .catch(err => {
@@ -161,7 +173,7 @@ const SEARCH = {
 const ACTORS = {
    showActors(results) {
 
-      let contentArea = document.querySelector('#actors .row');
+      let contentArea = document.querySelector('#cardContainer');
       let df = document.createDocumentFragment();
 
       APP.sortBtns('on');
@@ -179,8 +191,8 @@ const ACTORS = {
 
       contentArea.innerHTML = '';
       contentArea.append(df);
-      NAV.hideShowContent('#actors', 'flex');
-      NAV.hideShowContent('#actors h2', 'block');
+      NAV.hideShowContent('#actors', 'block');
+      // NAV.hideShowContent('#actors h2', 'block');
       contentArea.addEventListener('click', MEDIA.showMedia)
 
    } // end func
@@ -189,93 +201,34 @@ const ACTORS = {
 //media is for changes connected to content in the media section
 const MEDIA = {
    showMedia(ev) {
-      let myClass = ev.target.className;
-      let target = ev.target;
-      let card;
-      //ev.target.closest('[data-actorid])
-      if (myClass === 'card' ||
-         target.parentElement.className === 'card' ||
-         myClass === 'actorImage') {
+      let actorId = ev.target.closest('.card').dataset.actorid;
+      let contentArea = document.querySelector('#media .content');
+      let df = document.createDocumentFragment();
+      debugger;
+      SEARCH.results.forEach(person => {
 
-         let mediaSection = document.getElementById('media');
-         let actorsTitle = document.querySelector('#actors h2');
+         if (person.id == actorId) {
 
-         // always select cardDiv
-         if (myClass === 'card') {
-            card = target;
-         } else if (myClass === 'actorImage') {
-            card = target.parentElement.parentElement;
-         } else {
-            card = target.parentElement;
-         }
-         log(SEARCH.Results);
-         card.classList.add('clicked');
-         let img = document.querySelector('.clicked .actorImage');
-         img.classList.add('resize');
-         // push clicked card to the top
-         let main = document.querySelector('main');
-         main.insertBefore(card, main.firstChild);
+            person.known_for.forEach(media => {
+               let cardDiv = null;
+               if (media.media_type === 'movie') {
 
-         let actorsContent = document.querySelector('#actors .content')
-         NAV.hideShowContent('#actors .content', 'none');
-         document.querySelector('.clicked .popularity').innerHTML = `is known for...`;
+                  cardDiv = APP.buildCard(media, 'movie');
 
-         mediaSection.classList.remove('off');
-         mediaSection.classList.add('on');
+               } else {
+                  cardDiv = APP.buildCard(media, 'tv');
+               } // end inner if
 
+               df.append(cardDiv);
 
-         // goes back to Actors page
-         actorsTitle.addEventListener('click', () => {
-            mediaSection.classList.remove('on');
-            mediaSection.classList.add('off');
-            NAV.hideShowContent('#actors .content', 'flex');
-            actorsContent.append(card);
-            card.classList.remove('clicked');
-            img.classList.remove('resize');
-         }); // end listener
+            }); // end inner loop
 
-         let id = card.dataset.actorid;
-         let content = document.querySelector('section#media div.content');
-         let df = document.createDocumentFragment();
-         // log(SEARCH.Results);
-         SEARCH.Results.forEach(person => {
-            // use .find instead
-            if (person.id == id) {
-               person.known_for.forEach(movie => {
+         } // end outer if
 
-                  let cardDiv = document.createElement('div');
-                  cardDiv.className = "card";
-                  let imageDiv = document.createElement('div');
-                  imageDiv.className = "image";
-
-                  let img = document.createElement('img');
-                  img.src = APP.IMG_BASE_URL + 'w185' + movie.poster_path;
-                  img.alt = `poster for ${movie.title}`;
-                  imageDiv.append(img);
-
-                  let h3 = document.createElement('h3');
-                  h3.className = "cardName";
-
-                  let vote = document.createElement('p');
-                  vote.className = "vote";
-                  vote.innerHTML = `Rating: ${movie.vote_average}`;
-
-                  if (movie.media_type === 'movie') {
-                     h3.innerHTML = movie.title;
-
-                  } else {
-                     h3.innerHTML = movie.name;
-                  }
-
-                  cardDiv.append(imageDiv, h3, vote);
-                  df.append(cardDiv);
-               }); // end inner forEach
-            }
-         }); // end outer forEach
-         content.innerHTML = '';
-         content.append(df);
-      } // end if
-   } // end func
+      }); // end outer loop
+      contentArea.innerHTML = '';
+      contentArea.append(df);
+   } // end showMedia func
 }; // end MEDIA nameSpace
 
 //storage is for working with localstorage

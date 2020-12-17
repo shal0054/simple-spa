@@ -6,7 +6,7 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-   <link rel="stylesheet" href="css/myMain.css" />
+   <link rel="stylesheet" href="css/main.css" />
 
    <link rel="shortcut icon" type="image/x-icon" href="./img/favicon.ico" />
    <title>Actors Search</title>
@@ -22,8 +22,8 @@
          <div class="row">
             <div class="col s12">
 
-               <div id="pageTitle" class="col s12 m12 l6">
-                  <h1>Actor<i><b>S</b>earch</i></h1>
+               <div class="col s12 m12 l6">
+                  <h1 id="pageTitle">Actor<i><b>S</b>earch</i></h1>
                </div>
 
                <div class="col s12 m12 l6">
@@ -38,13 +38,13 @@
 
                   <div class="sort-btns">
                      <span id="sort-span">Sort by:</span>
-                        <a id="sNameBtn" class="waves-effect waves-light btn-flat white-text">
-                           <i id="nameArrow" class="arrow material-icons left">keyboard_arrow_down</i>
-                           Name</a>
-                        <a id="sPopBtn" class="waves-effect waves-light btn-flat white-text">
-                           <i id="popArrow" class="arrow material-icons right">keyboard_arrow_up</i>
-                           Popularity</a>
-                     
+                     <a id="sNameBtn" class="waves-effect waves-light btn-flat white-text  flow-text">
+                        <i id="nameArrow" class="arrow material-icons left">keyboard_arrow_down</i>
+                        Name</a>
+                     <a id="sPopBtn" class="waves-effect waves-light btn-flat white-text flow-text">
+                        <i id="popArrow" class="arrow material-icons right">keyboard_arrow_up</i>
+                        Popularity</a>
+
                   </div>
 
                </div>
@@ -72,24 +72,28 @@
       </section>
 
       <section id="actors" class="">
-         <div class="col s12">
-            <h2 class="center-align">Actors</h2>
-            <div id="cardContainer" class="row">
-               <p>Content grid will go here</p>
-               <p>Content grid will go here</p>
-               <p>Content grid will go here</p>
-               <p>Content grid will go here</p>
-            </div>
+         <h2 class="center-align">Actors</h2>
+
+         <div id="cardContainer" class="row">
+            <p>Content grid will go here</p>
+            <p>Content grid will go here</p>
+            <p>Content grid will go here</p>
+            <p>Content grid will go here</p>
          </div>
+
       </section>
 
       <section id="media" class="off">
-         <h2>Media</h2>
-         <div class="content">
-            <p>Media content</p>
-            <p>Media content</p>
-            <p>Media content</p>
-            <p>Media content</p>
+         <div id="modal1" class="modal bottom-sheet">
+            <div class="modal-content">
+               <h2>Media</h2>
+               <div class="content">
+                  <p>Media content</p>
+                  <p>Media content</p>
+                  <p>Media content</p>
+                  <p>Media content</p>
+               </div>
+            </div>
          </div>
       </section>
    </main>
