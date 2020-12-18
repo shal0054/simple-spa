@@ -16,6 +16,7 @@
    <script src="js/main.js" defer></script>
 </head>
 
+
 <body>
    <header class="black white-text valign-wrapper">
       <div class="container">
@@ -52,6 +53,18 @@
          </div>
       </div>
    </header>
+
+   <div id="loadModal" class="modal">
+      <div class="modal-content">
+         <h4 class="center-align">Loading...</h4>
+         <div id="loader" class="progress container">
+            <div class="indeterminate"></div>
+         </div>
+      </div>
+      <a id="loadModalOff" class="modal-close" href="#!"></a>
+   </div>
+   <a id="loadModalOn" class="modal-trigger" href="#loadModal"></a>
+
    <main>
       <section id="instructions" class="container center-align">
          <h2>How to Start</h2>
@@ -74,7 +87,7 @@
       <section id="actors" class="">
          <h2 class="center-align">Actors</h2>
 
-         <div id="cardContainer" class="row">
+         <div id="actorsCardContainer" class="row">
             <p>Content grid will go here</p>
             <p>Content grid will go here</p>
             <p>Content grid will go here</p>
@@ -84,17 +97,23 @@
       </section>
 
       <section id="media" class="off">
-         <div id="modal1" class="modal bottom-sheet">
+
+         <!-- Modal Trigger -->
+         <a id="mediaModalOn" class="modal-trigger" href="#mediaModal"></a>
+
+         <!-- Modal Structure -->
+         <div id="mediaModal" class="modal bottom-sheet">
             <div class="modal-content">
-               <h2>Media</h2>
-               <div class="content">
-                  <p>Media content</p>
-                  <p>Media content</p>
-                  <p>Media content</p>
-                  <p>Media content</p>
+               <h3 class="center-align">Media</h3>
+               <div id="mediaCardContainer" class="row">
+                  <p>Media cards</p>
                </div>
             </div>
+            <!-- <div class="modal-footer">
+               <a id="mediaModalOff" href="#!" class="modal-close"></a>
+            </div> -->
          </div>
+
       </section>
    </main>
    <footer>

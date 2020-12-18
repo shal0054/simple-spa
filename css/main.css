@@ -7,6 +7,10 @@ header {
    min-height: 30vh;
 }
 
+/* #loader {
+   display: none;
+} */
+
 #pageTitle:hover {
    cursor: pointer;
 }
@@ -38,7 +42,7 @@ header {
 }
 
 #media {
-   display: none;
+   /* display: none; */
 }
 
 footer {

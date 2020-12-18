@@ -15,6 +15,26 @@ const APP = {
       document.querySelector('#btnSearch').addEventListener('click', SEARCH.checkSearch);
       document.querySelector('#pageTitle').addEventListener('click', () => { location.reload() });
       STORAGE.loadStorage();
+      APP.loadModalInit();
+      APP.mediaModalInit();
+   },
+
+   loadModalInit() {
+      var elems = document.getElementById('loadModal');
+      var options = {
+         'dismissible': false,
+      }
+      var instances = M.Modal.init(elems, options);
+   },
+
+   mediaModalInit() {
+      var elems = document.getElementById('mediaModal');
+      var options = {
+         'preventScrolling': false,
+         'inDuration': 500,
+         'outDuration': 500
+      }
+      var instances = M.Modal.init(elems, options);
    },
 
    buildCard(result, type) {
@@ -35,6 +55,7 @@ const APP = {
       imgDiv.classList.add('card-image');
 
       let img = document.createElement('img');
+      img.classList.add('cardImage')
 
       let cardStackDiv = document.createElement('div');
       cardStackDiv.classList.add('card-stacked');
@@ -46,32 +67,48 @@ const APP = {
       cardContentDiv.classList.add('card-content');
 
       let p = document.createElement('p');
+      p.className = "cardText";
 
       if (type === 'actor') {
 
          cardDiv.setAttribute('data-actorid', result.id);
 
-         img.classList.add('actorImage');
          img.src = APP.IMG_BASE_URL + 'w185' + result.profile_path;
          img.alt = `${result.name}'s image`;
 
          h3.innerHTML = result.name;
 
-         p.className = "popularity";
          p.innerHTML = `Popularity: ${result.popularity}`;
 
+      } else if (type === 'movie') {;
+
+         img.src = APP.IMG_BASE_URL + 'w185' + result.poster_path;
+         img.alt = `poster for ${result.title}`;
+
+         h3.innerHTML = result.title;
+
+         p.innerHTML = `Vote Average: ${result.vote_average}`;
+
+      } else {
+
+         img.src = APP.IMG_BASE_URL + 'w185' + result.poster_path;
+         img.alt = `poster for ${result.name}`;
+
+         h3.innerHTML = result.name;
+
+         p.innerHTML = `Vote Average: ${result.vote_average}`;
       } // end if
 
       cardContentDiv.append(h3, p);
-
       imgDiv.append(img);
       cardStackDiv.append(cardContentDiv);
       card.append(imgDiv, cardStackDiv);
       cardGridDiv.append(card);
       rowDiv.append(cardGridDiv);
       cardDiv.append(rowDiv);
+
       return cardDiv;
-   },
+   }, // end buildCard func
 
    sortBtns(io) {
       if (io === 'on') {
@@ -132,7 +169,9 @@ const SEARCH = {
          if (STORAGE.keys.includes(key)) { // existing query
             SEARCH.results = STORAGE.getStorage(key);
             ACTORS.showActors(SEARCH.results);
-         } else { // a brand new search query
+         } else { // a brand new search query 
+            // turn on loading modal, then fetch
+            document.getElementById("loadModalOn").click();
             SEARCH.doFetch(input);
          }
 
@@ -173,7 +212,7 @@ const SEARCH = {
 const ACTORS = {
    showActors(results) {
 
-      let contentArea = document.querySelector('#cardContainer');
+      let contentArea = document.querySelector('#actorsCardContainer');
       let df = document.createDocumentFragment();
 
       APP.sortBtns('on');
@@ -192,8 +231,11 @@ const ACTORS = {
       contentArea.innerHTML = '';
       contentArea.append(df);
       NAV.hideShowContent('#actors', 'block');
-      // NAV.hideShowContent('#actors h2', 'block');
-      contentArea.addEventListener('click', MEDIA.showMedia)
+
+      // turnoff loading modal
+      document.getElementById("loadModalOff").click();
+
+      contentArea.addEventListener('click', MEDIA.showMedia);
 
    } // end func
 }; // end this.nameSpace
@@ -201,21 +243,21 @@ const ACTORS = {
 //media is for changes connected to content in the media section
 const MEDIA = {
    showMedia(ev) {
-      let actorId = ev.target.closest('.card').dataset.actorid;
-      let contentArea = document.querySelector('#media .content');
+      let actorId = ev.target.closest('.oneCard').dataset.actorid;
+      let contentArea = document.querySelector('#mediaCardContainer');
       let df = document.createDocumentFragment();
-      debugger;
+      // debugger;
       SEARCH.results.forEach(person => {
 
          if (person.id == actorId) {
 
             person.known_for.forEach(media => {
                let cardDiv = null;
-               if (media.media_type === 'movie') {
+               if (media.media_type === 'movie' && media.poster_path) {
 
                   cardDiv = APP.buildCard(media, 'movie');
 
-               } else {
+               } else if (media.media_type === 'tv' && media.poster_path) {
                   cardDiv = APP.buildCard(media, 'tv');
                } // end inner if
 
@@ -228,6 +270,10 @@ const MEDIA = {
       }); // end outer loop
       contentArea.innerHTML = '';
       contentArea.append(df);
+
+      // turn on media modal
+      document.getElementById("mediaModalOn").click();
+
    } // end showMedia func
 }; // end MEDIA nameSpace
 
