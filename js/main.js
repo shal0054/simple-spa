@@ -20,7 +20,6 @@ const APP = {
       // debugger;
       NAV.navInit();
       window.addEventListener('hashchange', NAV.hashChange);
-      window.addEventListener('popstate', NAV.popState);
    },
 
    loadModalInit() {
@@ -165,7 +164,7 @@ const SEARCH = {
    input: '',
 
    checkSearch(ev) {
-      ev.preventDefault();
+      if (ev) ev.preventDefault();
       SEARCH.input = document.querySelector('#search').value.toLowerCase();
 
       if (SEARCH.input) {
@@ -356,16 +355,15 @@ const NAV = {
    },
    
    navUpdate(input) {
-      history.replaceState({}, 'actors', `${NAV.baseURL}${input}`);
+      history.replaceState({'input':input}, 'actors', `${NAV.baseURL}${input}`);
    },
 
    hashChange(ev) {
-
+      SEARCH.input = location.hash.substring(1);
+      log(SEARCH.input);
+      // SEARCH.checkSearch();
    },
 
-   popState(ev) {
-
-   }
 }; // end NAV nameSpace
 
 //Start everything running
