@@ -36,7 +36,10 @@ const APP = {
       var options = {
          'preventScrolling': false,
          'inDuration': 500,
-         'outDuration': 500
+         'outDuration': 500,
+         'onCloseEnd': () => {
+            NAV.navUpdate(`${SEARCH.input}`);
+         }
       }
       var instances = M.Modal.init(elems, options);
    },
@@ -287,7 +290,7 @@ const MEDIA = {
 
       // turn on media modal
       document.getElementById("mediaModalOn").click();
-      NAV.navUpdate(`/${actorId}`);
+      NAV.navUpdate(`${SEARCH.input}/${actorId}`);
    } // end showMedia func
 }; // end MEDIA nameSpace
 
@@ -353,8 +356,7 @@ const NAV = {
    },
    
    navUpdate(input) {
-      NAV.baseURL += input;
-      history.replaceState({}, 'actors', `${NAV.baseURL}`);
+      history.replaceState({}, 'actors', `${NAV.baseURL}${input}`);
    },
 
    hashChange(ev) {
