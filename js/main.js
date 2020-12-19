@@ -5,9 +5,6 @@ const log = console.log;
 const APP = {
    KEY: "67a8835b5b606f17a40522e9ff643ea8",
    baseURL: 'https://api.themoviedb.org/3/',
-   // get urlConfig() {
-   //    return `${this.baseURL}configuration?api_key=${this.KEY}`
-   // },
    IMG_BASE_URL: 'https://image.tmdb.org/t/p/',
 
    init: () => {
@@ -17,7 +14,6 @@ const APP = {
       STORAGE.loadStorage();
       APP.loadModalInit();
       APP.mediaModalInit();
-      // debugger;
       NAV.navInit();
       window.addEventListener('hashchange', NAV.hashChange);
    },
@@ -27,7 +23,7 @@ const APP = {
       var options = {
          'dismissible': false,
       }
-      var instances = M.Modal.init(elems, options);
+      M.Modal.init(elems, options);
    },
 
    mediaModalInit() {
@@ -40,7 +36,7 @@ const APP = {
             NAV.navUpdate(`${SEARCH.input}`);
          }
       }
-      var instances = M.Modal.init(elems, options);
+      M.Modal.init(elems, options);
    },
 
    buildCard(result, type) {
@@ -86,7 +82,8 @@ const APP = {
 
          p.innerHTML = `Popularity: ${result.popularity}`;
 
-      } else if (type === 'movie') {;
+      } else if (type === 'movie') {
+         ;
 
          img.src = APP.IMG_BASE_URL + 'w185' + result.poster_path;
          img.alt = `poster for ${result.title}`;
@@ -160,12 +157,13 @@ const APP = {
 //search is for anything to do with the fetch api
 const SEARCH = {
    results: [],
-
    input: '',
 
    checkSearch(ev) {
-      if (ev) ev.preventDefault();
-      SEARCH.input = document.querySelector('#search').value.toLowerCase();
+      if (ev) {
+         ev.preventDefault();
+         SEARCH.input = document.querySelector('#search').value.toLowerCase();
+      }
 
       if (SEARCH.input) {
 
@@ -224,25 +222,23 @@ const ACTORS = {
       let df = document.createDocumentFragment();
 
       if (results) {
-      
-      APP.sortBtns('on');
 
-      results.forEach(result => {
+         APP.sortBtns('on');
+         results.forEach(result => {
 
-         if (result.profile_path) {
+            if (result.profile_path) {
 
-            let cardDiv = APP.buildCard(result, 'actor');
+               let cardDiv = APP.buildCard(result, 'actor');
+               df.append(cardDiv);
 
-            df.append(cardDiv);
-
-         } // end if
-      }); // end forEach
-   } else {
-      let msg = document.createElement('h3');
-      msg.className = "center-align";
-      msg.innerHTML = "No Results Found!";
-      df.append(msg);
-   }
+            } // end if
+         }); // end forEach
+      } else {
+         let msg = document.createElement('h3');
+         msg.className = "center-align";
+         msg.innerHTML = "No Results Found!";
+         df.append(msg);
+      }
       contentArea.innerHTML = '';
       contentArea.append(df);
       NAV.hideShowContent('#actors', 'block');
@@ -252,7 +248,7 @@ const ACTORS = {
 
       contentArea.addEventListener('click', MEDIA.showMedia);
 
-      NAV.navUpdate(SEARCH.input);
+      NAV.navUpdate('actors', SEARCH.input);
    } // end func
 }; // end this.nameSpace
 
@@ -289,14 +285,13 @@ const MEDIA = {
 
       // turn on media modal
       document.getElementById("mediaModalOn").click();
-      NAV.navUpdate(`${SEARCH.input}/${actorId}`);
+      NAV.navUpdate('media', `${SEARCH.input}/${actorId}`);
    } // end showMedia func
 }; // end MEDIA nameSpace
 
 //storage is for working with localstorage
 const STORAGE = {
    keys: [],
-
    BASE_KEY: 'Karim-Actors-Search-',
 
    sorting(prop) {
@@ -353,9 +348,9 @@ const NAV = {
       NAV.baseURL += '#';
       history.replaceState({}, 'home', `${NAV.baseURL}`);
    },
-   
-   navUpdate(input) {
-      history.replaceState({'input':input}, 'actors', `${NAV.baseURL}${input}`);
+
+   navUpdate(title, input) {
+      history.replaceState({ }, title, `${NAV.baseURL}${input}`);
    },
 
    hashChange(ev) {
