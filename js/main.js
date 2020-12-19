@@ -5,6 +5,9 @@ const log = console.log;
 const APP = {
    KEY: "67a8835b5b606f17a40522e9ff643ea8",
    baseURL: 'https://api.themoviedb.org/3/',
+   // get urlConfig() {
+   //    return `${this.baseURL}configuration?api_key=${this.KEY}`
+   // },
    IMG_BASE_URL: 'https://image.tmdb.org/t/p/',
 
    init: () => {
@@ -14,8 +17,9 @@ const APP = {
       STORAGE.loadStorage();
       APP.loadModalInit();
       APP.mediaModalInit();
+      // debugger;
       NAV.navInit();
-      window.addEventListener('hashchange', NAV.hashChange);
+      window.addEventListener('hashchange', NAV.popChange);
    },
 
    loadModalInit() {
@@ -23,7 +27,7 @@ const APP = {
       var options = {
          'dismissible': false,
       }
-      M.Modal.init(elems, options);
+      var instances = M.Modal.init(elems, options);
    },
 
    mediaModalInit() {
@@ -33,10 +37,10 @@ const APP = {
          'inDuration': 500,
          'outDuration': 500,
          'onCloseEnd': () => {
-            NAV.navUpdate(`${SEARCH.input}`);
+            NAV.navUpdate('actor', `${SEARCH.input}`);
          }
       }
-      M.Modal.init(elems, options);
+      var instances = M.Modal.init(elems, options);
    },
 
    buildCard(result, type) {
@@ -157,6 +161,7 @@ const APP = {
 //search is for anything to do with the fetch api
 const SEARCH = {
    results: [],
+
    input: '',
 
    checkSearch(ev) {
@@ -224,11 +229,13 @@ const ACTORS = {
       if (results) {
 
          APP.sortBtns('on');
+
          results.forEach(result => {
 
             if (result.profile_path) {
 
                let cardDiv = APP.buildCard(result, 'actor');
+
                df.append(cardDiv);
 
             } // end if
@@ -247,7 +254,7 @@ const ACTORS = {
       document.getElementById("loadModalOff").click();
 
       contentArea.addEventListener('click', MEDIA.showMedia);
-
+      debugger;
       NAV.navUpdate('actors', SEARCH.input);
    } // end func
 }; // end this.nameSpace
@@ -350,11 +357,16 @@ const NAV = {
    },
 
    navUpdate(title, input) {
-      history.replaceState({ }, title, `${NAV.baseURL}${input}`);
+      let hash = location.hash;
+      log(hash);
+      // if (hash && (hash != "#" || hash != "!")) return;
+      
+      history.replaceState({ 'input': input }, title, `${NAV.baseURL}${input}`);
    },
 
-   hashChange(ev) {
+   popChange(ev) {
       SEARCH.input = location.hash.substring(1);
+      if (!SEARCH.input) location.reload(); // reload when back button clicked all the way back to start
       log(SEARCH.input);
       // SEARCH.checkSearch();
    },
