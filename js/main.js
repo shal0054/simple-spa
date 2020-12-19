@@ -17,6 +17,10 @@ const APP = {
       STORAGE.loadStorage();
       APP.loadModalInit();
       APP.mediaModalInit();
+      // debugger;
+      NAV.navInit();
+      window.addEventListener('hashchange', NAV.hashChange);
+      window.addEventListener('popstate', NAV.popState);
    },
 
    loadModalInit() {
@@ -155,16 +159,18 @@ const APP = {
 const SEARCH = {
    results: [],
 
+   input: '',
+
    checkSearch(ev) {
       ev.preventDefault();
-      let input = document.querySelector('#search').value.toLowerCase();
+      SEARCH.input = document.querySelector('#search').value.toLowerCase();
 
-      if (input) {
+      if (SEARCH.input) {
 
          NAV.hideShowContent('#instructions', 'none');
          NAV.hideShowContent('footer', 'none');
 
-         let key = STORAGE.BASE_KEY + input;
+         let key = STORAGE.BASE_KEY + SEARCH.input;
 
          if (STORAGE.keys.includes(key)) { // existing query
             SEARCH.results = STORAGE.getStorage(key);
@@ -172,7 +178,7 @@ const SEARCH = {
          } else { // a brand new search query 
             // turn on loading modal, then fetch
             document.getElementById("loadModalOn").click();
-            SEARCH.doFetch(input);
+            SEARCH.doFetch(SEARCH.input);
          }
 
       } else {
@@ -215,6 +221,8 @@ const ACTORS = {
       let contentArea = document.querySelector('#actorsCardContainer');
       let df = document.createDocumentFragment();
 
+      if (results) {
+      
       APP.sortBtns('on');
 
       results.forEach(result => {
@@ -227,7 +235,12 @@ const ACTORS = {
 
          } // end if
       }); // end forEach
-
+   } else {
+      let msg = document.createElement('h3');
+      msg.className = "center-align";
+      msg.innerHTML = "No Results Found!";
+      df.append(msg);
+   }
       contentArea.innerHTML = '';
       contentArea.append(df);
       NAV.hideShowContent('#actors', 'block');
@@ -237,6 +250,7 @@ const ACTORS = {
 
       contentArea.addEventListener('click', MEDIA.showMedia);
 
+      NAV.navUpdate(SEARCH.input);
    } // end func
 }; // end this.nameSpace
 
@@ -273,7 +287,7 @@ const MEDIA = {
 
       // turn on media modal
       document.getElementById("mediaModalOn").click();
-
+      NAV.navUpdate(`/${actorId}`);
    } // end showMedia func
 }; // end MEDIA nameSpace
 
@@ -326,8 +340,29 @@ const STORAGE = {
 
 //nav is for anything connected to the history api and location
 const NAV = {
+   baseURL: null,
+
    hideShowContent(item, vis) {
       document.querySelector(item).style.display = vis;
+   },
+
+   navInit() {
+      NAV.baseURL = location.href.split('#')[0];
+      NAV.baseURL += '#';
+      history.replaceState({}, 'home', `${NAV.baseURL}`);
+   },
+   
+   navUpdate(input) {
+      NAV.baseURL += input;
+      history.replaceState({}, 'actors', `${NAV.baseURL}`);
+   },
+
+   hashChange(ev) {
+
+   },
+
+   popState(ev) {
+
    }
 }; // end NAV nameSpace
 
